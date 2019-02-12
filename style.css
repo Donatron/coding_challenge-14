@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "game-of-thrones";
+  src: url(fonts/game-of-thrones.ttf) format("truetype");
+}
+
 * {
   border: 0;
   margin: 0;
@@ -7,6 +12,12 @@
 body {
   min-height: 100vh;
   width: 100%;
+  background-image: url("./img/snow.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  font-family: game-of-thrones;
+  display: inline-block;
 }
 
 .content {
@@ -28,23 +39,51 @@ body {
   height: 100%;
 }
 
+h1 {
+  padding: 1rem;
+}
+
 .game-info {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding: 30px 0;
+  color: white;
 }
 
 #game-button {
   background-color: black;
   color: white;
   padding: 10px 20px;
-  border: none;
+  border: solid 1px #f5f5f5;
+  border-radius: 3px;
+  font-family: game-of-thrones;
+  background-color: transparent;
+  margin-bottom: 0;
 }
 
 .stats {
   display: flex;
   flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  padding: 20px 12px;
+  line-height: 1.25rem;
+}
+
+.stats h4 {
+  margin-bottom: 0.75rem;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.stats div h6 {
+  margin-right: 20px;
 }
 
 .board {
@@ -57,8 +96,78 @@ body {
   align-items: center;
 }
 
+.tile-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
 .tile {
   height: 100px;
   width: 100px;
   border-radius: 5px;
+  box-shadow: 6px 10px 54px -3px rgba(0, 0, 0, 0.75);
+}
+
+.side-a,
+.side-b {
+  backface-visibility: hidden;
+}
+
+.side-a {
+  position: relative;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(246, 246, 246, 1) 30%,
+    rgba(10, 2, 10, 1) 100%
+  );
+}
+
+.side-b {
+  position: absolute;
+  border-radius: 5px;
+  text-align: center;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: rotateY(180deg);
+  background: rgba(0, 0, 0, 0);
+  overflow: hidden;
+}
+
+.side-b img {
+  width: 100%;
+  align-self: center;
+  border-radius: 5px;
+}
+
+.card:hover {
+  transform: rotateY(-180deg);
+}
+
+.card {
+  transition: transform 0.2s ease-out;
+  transform-style: preserve-3d;
+  margin: 10px;
+}
+
+footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 30px 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+footer a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease-in;
+}
+
+footer a:hover {
+  opacity: 0.65;
 }
