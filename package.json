@@ -1,0 +1,19 @@
+{
+  "name": "game-of-thrones-matching-game",
+  "version": "1.0.0",
+  "description": "Javascript-based card matching game",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Donatron/coding_challenge-14.git"
+  },
+  "author": "Don Macarthur",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Donatron/coding_challenge-14/issues"
+  },
+  "homepage": "https://github.com/Donatron/coding_challenge-14#readme"
+}
