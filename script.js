@@ -5,7 +5,7 @@ const matches = document.querySelector("#matches");
 const time = document.querySelector("#time");
 const stats = document.querySelector(".stats");
 const gameButton = document.querySelector("#game-button");
-const cardsArray = document.querySelectorAll(".card");
+const boardElement = document.querySelector(".board");
 
 // Declare variables for game information
 let numberOfMoves = 0;
@@ -17,7 +17,11 @@ let cardTwoSource;
 let cardOneId;
 let cardTwoId;
 let match = false;
-let gameStart;
+let gameTimer;
+let timer;
+let gameTime;
+let timerRunning = false;
+let gameStatus = "Stopped";
 
 // Create array of card image source files
 const imagesArray = [
@@ -66,6 +70,18 @@ const getRandomCharacters = () => {
 // Assign random characters to variable for creation of game board
 let randomCharacters = getRandomCharacters();
 
+// Add rows to Game Board
+const createRows = n => {
+  // Create HTML variable
+  let html = "";
+  // Iternate 'n' times and create a row for each iteration
+  for (let i = 1; i <= n; i++) {
+    html += `<div class="row-${i}"><div class="tile-container"></div></div>`;
+  }
+
+  boardElement.innerHTML = html;
+};
+
 // Declare function to create cards
 const createCard = (src, id) => {
   let html = `<div class="card" id="card-${id}">`;
@@ -88,11 +104,8 @@ const createBoard = () => {
   return boardArray;
 };
 
-// Assign all cards to board;
-let board = createBoard();
-
 // Iterate over board array and add items to game board
-const displayBoard = () => {
+const displayBoard = board => {
   // iterate over each row of game board
   for (let i = 1; i <= 4; i++) {
     let row = document.querySelector(`.row-${i} .tile-container`);
@@ -105,45 +118,139 @@ const displayBoard = () => {
   }
 };
 
-// Add start game button functionality
+// Function to update game button and game status
+const updateGameStatus = () => {
+  if (gameStatus === "Stopped") {
+    // Update text on game button
+    updateGameButton("Pause");
+
+    // Reinstate click functionality to board
+    boardElement.addEventListener("click", handleBoardClick);
+
+    // Update game status
+    gameStatus = "Playing";
+  } else if (gameStatus === "Playing") {
+    // Update text on game button
+    updateGameButton("Resume");
+
+    // Remove click functionality from board
+    boardElement.removeEventListener("click", handleBoardClick);
+
+    // Stop timer
+    clearInterval(gameTimer);
+
+    // Update game status
+    gameStatus = "Paused";
+  } else if (gameStatus === "Paused") {
+    // Update text on game button
+    updateGameButton("Pause");
+
+    // Reinstate click functionality to board
+    boardElement.addEventListener("click", handleBoardClick);
+
+    gameTimer = setInterval(timer, 1000);
+
+    // Update game status
+    gameStatus = "Playing";
+  }
+};
+
+// Function to update Game Button Text content
+const updateGameButton = value => {
+  return (gameButton.textContent = value);
+};
+
+// Start game
+const startGame = () => {
+  // Add rows to game board
+  createRows(4);
+
+  // Assign all cards to board;
+  let board = createBoard();
+
+  // Display game board
+  displayBoard(board);
+
+  init();
+};
+
+// TODO: Complete game
+const completeGame = () => {
+  // Display success message
+  gameFinsihedMessage(numberOfMoves, gameTime);
+
+  // Update game status
+  gameStatus = "Stopped";
+
+  // Update game button
+  updateGameButton("Play Again");
+
+  // Clear Timer
+  clearInterval(gameTimer);
+};
+
+// Format gameTime for finish message
+const formatGameTime = time => {
+  let sec = Math.floor(time % 60);
+  let min = Math.floor(time / 60);
+
+  if (sec < 10) {
+    sec = `0${sec}`;
+  }
+  if (min < 10) {
+    min = `0${min}`;
+  }
+
+  return `${min} : ${sec}`;
+};
+
+// Create game completed message
+const gameFinsihedMessage = (moves, time) => {
+  let totalTime = formatGameTime(time);
+
+  let html = "<div class='success'>";
+  html += "<h4>CONGRATULATIONS!</h4>";
+  html += `<p>You found all matches in ${moves} moves</p>`;
+  html += `<p>And you took ${totalTime} minutes</p>`;
+  html += "<p>You've managed to ward off the white walkers.</p>";
+  html += "<p>For now.......</p>";
+  html += "</div>";
+
+  boardElement.innerHTML = html;
+};
+
+// Add game button click functionality
 gameButton.addEventListener("click", e => {
   e.preventDefault();
 
-  // Display game board
-  displayBoard();
+  // If between games, create game board and start game
+  if (gameStatus === "Stopped") {
+    startGame();
+  }
 
-  init();
-  // Start timer;
-  gameStart = new Date().getTime();
-  createTimer(gameStart);
+  // Update Game and Game Button Status
+  updateGameStatus();
 });
 
 // Reset all game variables;
 const resetGame = () => {
   numberOfMoves = 0;
   numberOfMatches = 0;
-  timeElapsed = "00 : 00";
+  gameTime = 0;
 };
 
 // Create timer
-const createTimer = start => {
-  setInterval(() => {
-    let now = new Date().getTime();
-    let timeElapsed = now - start;
-
-    let seconds = Math.floor((timeElapsed % (1000 * 60)) / 1000);
-    let minutes = Math.floor((timeElapsed % (1000 * 60 * 60)) / (1000 * 60));
-
-    if (seconds < 10) {
-      seconds = `0${seconds}`;
-    }
-
-    if (minutes < 10) {
-      minutes = `0${minutes}`;
-    }
-
-    time.innerHTML = `${minutes} : ${seconds}`;
-  }, 1000);
+timer = () => {
+  gameTime++;
+  let min = Math.floor(gameTime / 60);
+  let sec = Math.floor(gameTime % 60);
+  if (min < 10) {
+    min = `0${min}`;
+  }
+  if (sec < 10) {
+    sec = `0${sec}`;
+  }
+  time.innerHTML = `${min} : ${sec}`;
 };
 
 // Assign id and source variables to selected card;
@@ -157,92 +264,17 @@ const getCardVariables = (src, id) => {
   }
 };
 
-// Rotate Cards at click;
-cardsArray.forEach(card => {
-  card.addEventListener("click", () => {
-    // Do nothing if card already matched
-    if (card.classList.contains("matched")) {
-      return;
-    }
-    card.classList.toggle("flipped");
-    flippedCards++;
-
-    if (card.classList.contains("flipped")) {
-      card.style.transform = "rotateY(180deg)";
-    }
-
-    //assign photo src to variable
-    let sideB = card.querySelector(".side-b img");
-    let src = sideB.getAttribute("src");
-    let id = card.getAttribute("id");
-
-    // Get card Variables
-    getCardVariables(src, id);
-
-    if (flippedCards === 2) {
-      numberOfMoves++;
-      let cardOne = document.querySelector(`#${cardOneId}`);
-      let cardTwo = document.querySelector(`#${cardTwoId}`);
-
-      if (checkMatch(cardOneSource, cardTwoSource)) {
-        numberOfMatches++;
-
-        // add "matched" class to cards
-        cardOne.classList.add("matched");
-        cardTwo.classList.add("matched");
-      } else {
-        setTimeout(() => {
-          console.log("this is running");
-          cardOne.style.transform = "rotateY(0deg)";
-          cardTwo.style.transform = "rotateY(0deg)";
-        }, 500);
-        // Remove "flipped" class
-        cardOne.classList.remove("flipped");
-        cardTwo.classList.remove("flipped");
-      }
-
-      // Update number of moves
-      moves.innerHTML = numberOfMoves;
-      matches.innerHTML = numberOfMatches;
-
-      // Reset flipped cards;
-      flippedCards = 0;
-    }
-  });
-});
-
-// Check whether matched pair found
-const checkMatch = (cardOne, cardTwo) => {
-  return cardOne === cardTwo;
-};
-
-const init = () => {
-  resetGame();
-
-  moves.innerHTML = numberOfMoves;
-  matches.innerHTML = numberOfMatches;
-  time.innerHTML = timeElapsed;
-  stats.style.visibility = "visible";
-};
-
-// Add copyright tags to footer
-const generateCopyright = () => {
-  let html = "";
-  let date = new Date();
-  let year = date.getFullYear();
-
-  html += `<p>Copyright &copy ${year}`;
-  html += " | ";
-  html += "<a href='https://donatron.github.io/portfolio' target='_blank' >";
-  html += "Don Macarthur </a></p>";
-
-  return html;
-};
-
-footer.innerHTML = generateCopyright();
-
 // function to find card element
 const handleBoardClick = event => {
+  // Do nothing if user clicks on something other than card
+  if (
+    !event.target.parentNode ||
+    !event.target.parentNode.classList.contains("card")
+  ) {
+    return;
+  }
+
+  // Create card variable
   let card = event.target.parentNode;
 
   // Do nothing if card already matched
@@ -277,13 +309,22 @@ const handleBoardClick = event => {
       cardTwo.classList.add("matched");
     } else {
       setTimeout(() => {
-        console.log("this is running");
         cardOne.style.transform = "rotateY(0deg)";
         cardTwo.style.transform = "rotateY(0deg)";
       }, 500);
       // Remove "flipped" class
       cardOne.classList.remove("flipped");
       cardTwo.classList.remove("flipped");
+    }
+
+    if (numberOfMatches === 8) {
+      // Show success message
+      completeGame();
+
+      // Show congratulations message
+
+      // Clear timer
+      clearTimeout(createTimer);
     }
 
     // Update number of moves
@@ -295,4 +336,37 @@ const handleBoardClick = event => {
   }
 };
 
-document.querySelector(".board").addEventListener("click", handleBoardClick);
+boardElement.addEventListener("click", handleBoardClick);
+
+// Check whether matched pair found
+const checkMatch = (cardOne, cardTwo) => {
+  return cardOne === cardTwo;
+};
+
+const init = () => {
+  resetGame();
+
+  moves.innerHTML = numberOfMoves;
+  matches.innerHTML = numberOfMatches;
+  time.innerHTML = timeElapsed;
+  stats.style.visibility = "visible";
+
+  // Start timer
+  gameTimer = setInterval(timer, 1000);
+};
+
+// Add copyright tags to footer
+const generateCopyright = () => {
+  let html = "";
+  let date = new Date();
+  let year = date.getFullYear();
+
+  html += `<p>Copyright &copy ${year}`;
+  html += " | ";
+  html += "<a href='https://donatron.github.io/portfolio' target='_blank' >";
+  html += "Don Macarthur </a></p>";
+
+  return html;
+};
+
+footer.innerHTML = generateCopyright();
