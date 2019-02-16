@@ -118,6 +118,12 @@ const displayBoard = board => {
   }
 };
 
+// Declare function to update number of moves and matches
+const updateStats = () => {
+  moves.innerHTML = numberOfMoves;
+  matches.innerHTML = numberOfMatches;
+};
+
 // Function to update game button and game status
 const updateGameStatus = () => {
   if (gameStatus === "Stopped") {
@@ -174,7 +180,7 @@ const startGame = () => {
   init();
 };
 
-// TODO: Complete game
+// Complete game
 const completeGame = () => {
   // Display success message
   gameFinsihedMessage(numberOfMoves, gameTime);
@@ -237,6 +243,7 @@ const resetGame = () => {
   numberOfMoves = 0;
   numberOfMatches = 0;
   gameTime = 0;
+  flippedCards = 0;
 };
 
 // Create timer
@@ -317,6 +324,9 @@ const handleBoardClick = event => {
       cardTwo.classList.remove("flipped");
     }
 
+    // Update number of moves and matches
+    updateStats();
+
     if (numberOfMatches === 8) {
       // Show success message
       completeGame();
@@ -326,10 +336,6 @@ const handleBoardClick = event => {
       // Clear timer
       clearTimeout(createTimer);
     }
-
-    // Update number of moves
-    moves.innerHTML = numberOfMoves;
-    matches.innerHTML = numberOfMatches;
 
     // Reset flipped cards;
     flippedCards = 0;
