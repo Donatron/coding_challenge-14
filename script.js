@@ -154,6 +154,7 @@ const updateGameStatus = () => {
     // Reinstate click functionality to board
     boardElement.addEventListener("click", handleBoardClick);
 
+    // Restart timer
     gameTimer = setInterval(timer, 1000);
 
     // Update game status
@@ -178,6 +179,22 @@ const startGame = () => {
   displayBoard(board);
 
   init();
+};
+
+// Check number of matches
+const checkMatches = () => {
+  if (numberOfMatches === 8) {
+    // Show success message
+    completeGame();
+
+    // Clear timer
+    clearTimeout(createTimer);
+  }
+};
+
+// Reset number of flipped cards
+const resetFlipped = () => {
+  flippedCards = 0;
 };
 
 // Complete game
@@ -243,7 +260,8 @@ const resetGame = () => {
   numberOfMoves = 0;
   numberOfMatches = 0;
   gameTime = 0;
-  flippedCards = 0;
+
+  resetFlipped();
 };
 
 // Create timer
@@ -315,6 +333,7 @@ const handleBoardClick = event => {
       cardOne.classList.add("matched");
       cardTwo.classList.add("matched");
     } else {
+      // Turn cards back over
       setTimeout(() => {
         cardOne.style.transform = "rotateY(0deg)";
         cardTwo.style.transform = "rotateY(0deg)";
@@ -327,18 +346,11 @@ const handleBoardClick = event => {
     // Update number of moves and matches
     updateStats();
 
-    if (numberOfMatches === 8) {
-      // Show success message
-      completeGame();
+    // Check number of matches
+    checkMatches();
 
-      // Show congratulations message
-
-      // Clear timer
-      clearTimeout(createTimer);
-    }
-
-    // Reset flipped cards;
-    flippedCards = 0;
+    // Reset number of flipped cards
+    resetFlipped();
   }
 };
 
@@ -364,8 +376,7 @@ const init = () => {
 // Add copyright tags to footer
 const generateCopyright = () => {
   let html = "";
-  let date = new Date();
-  let year = date.getFullYear();
+  let year = new Date().getFullYear();
 
   html += `<p>Copyright &copy ${year}`;
   html += " | ";
