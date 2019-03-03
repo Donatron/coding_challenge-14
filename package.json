@@ -2,18 +2,44 @@
   "name": "game-of-thrones-matching-game",
   "version": "1.0.0",
   "description": "Javascript-based card matching game",
-  "main": "script.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack-dev-server --config config/webpack.dev.js",
+    "build": "webpack --config config/webpack.dev.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Donatron/coding_challenge-14.git"
   },
+  "browserslist": [
+    "> 1%",
+    "last 5 versions",
+    "ie 8",
+    "ie 9"
+  ],
   "author": "Don Macarthur",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Donatron/coding_challenge-14/issues"
   },
-  "homepage": "https://github.com/Donatron/coding_challenge-14#readme"
+  "homepage": "https://github.com/Donatron/coding_challenge-14#readme",
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "autoprefixer": "^9.4.9",
+    "babel-loader": "^8.0.5",
+    "clean-webpack-plugin": "^1.0.1",
+    "extract-loader": "^3.1.0",
+    "file-loader": "^3.0.1",
+    "html-loader": "^0.5.5",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.6.0",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.2.0"
+  },
+  "dependencies": {
+    "css-loader": "^2.1.0",
+    "style-loader": "^0.23.1"
+  }
 }
