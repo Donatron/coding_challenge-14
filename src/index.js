@@ -34,6 +34,7 @@ let cardOneSource;
 let cardTwoSource;
 let cardOneId;
 let cardTwoId;
+const boardArray = [];
 let match = false;
 let gameTimer;
 let timer;
@@ -70,23 +71,18 @@ const getCharacterNames = () => {
   return characters;
 };
 
-let characters = getCharacterNames();
-
 // Create array of random characters;
 const getRandomCharacters = () => {
   let randomCharacters = [];
+  let characters = getCharacterNames();
 
   while (characters.length) {
     let index = Math.floor(Math.random(characters.length) * characters.length);
     randomCharacters.push(characters[index]);
     characters.splice(index, 1);
   }
-
   return randomCharacters;
 };
-
-// Assign random characters to variable for creation of game board
-let randomCharacters = getRandomCharacters();
 
 // Add rows to Game Board
 const createRows = n => {
@@ -113,9 +109,11 @@ const createCard = (src, id) => {
 
 // Create game board
 const createBoard = () => {
-  let boardArray = [];
-  for (let i = 0; i < randomCharacters.length; i++) {
-    let card = createCard(randomCharacters[i], i);
+  // Assign random characters to variable for creation of game board
+  let gameCharacters = getRandomCharacters();
+
+  for (let i = 0; i < gameCharacters.length; i++) {
+    let card = createCard(gameCharacters[i], i);
 
     boardArray.push(card);
   }
@@ -191,10 +189,10 @@ const startGame = () => {
   createRows(4);
 
   // Assign all cards to board;
-  let board = createBoard();
+  // let board = createBoard();
 
   // Display game board
-  displayBoard(board);
+  displayBoard(createBoard());
 
   initGame();
 };
@@ -206,7 +204,7 @@ const checkMatches = () => {
     completeGame();
 
     // Clear timer
-    clearTimeout(createTimer);
+    // clearTimeout(createTimer);
   }
 };
 
